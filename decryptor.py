@@ -45,6 +45,8 @@ def guess(digits, words):
         result["ranking"].sort(key=lambda e: result["scores"][e], reverse=True)
         result["prediction"] = result["ranking"][0]
         result["choice"] = 0  # index to show which score is used as prediction, might change during optimization
+        results.append(result)
+
     # pp.pprint(results)
 
     # find optimal solution
@@ -120,7 +122,7 @@ elif args.beispiel:
 
 
 # initialize data_structures
-digits = {1: [], 2: [], 3: [], 4: []}
+digits = default_digits = {1: [], 2: [], 3: [], 4: []}
 
 while True:
     c = 0  # count of correct guesses
@@ -182,3 +184,5 @@ while True:
     if nice_input() not in ["yes", "y", "Y"]:
         print("Good bye!")
         quit()
+    else:
+        digits = default_digits
