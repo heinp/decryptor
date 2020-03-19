@@ -85,7 +85,7 @@ def guess(digits, words):
         for ri, best_dig in zip(range(3), best_perm):
             results[ri]["prediction"] = best_dig
             results[ri]["choice"] = results[ri]["ranking"].index(best_dig)
-    pp.pprint(results)
+    # pp.pprint(results)
     return results
 
 
@@ -96,19 +96,20 @@ eng_path = "models/enwiki_20180420_300d.txt"
 parser = argparse.ArgumentParser(description="Computer player for the game 'Decrypto'")
 parser.add_argument("--german", "-g", action="store_true", help="Use German version (default: English)")
 parser.add_argument("--example", "-e", action="store_true", help="Use example Data (default: play")
+parser.add_argument("--beispiel", "-b", action="store_true", help="Use german example Data ( default:play)")
 args = parser.parse_args()
 
 
 
 print("Loading VSM...")
-if args["german"]:
+if args.german:
     path = ger_path
 else:
     path = eng_path
 model = KeyedVectors.load_word2vec_format(path, binary=False, limit=50000)
 print("Done.")
 
-if args["example"]:
+if args.example:
     # Example data for debugging
     # solution: 1: "china", 2: "bear", 3: "table", 4: "car"
     digits = {1: ["bamboo", "asia", "country"],
@@ -124,9 +125,51 @@ if args["example"]:
         print(d["prediction"])
     quit()
 
+elif args.beispiel:
+    # German example data for debugging
+    # solution: 1: "china", 2: "bär", 3: "tisch", 4: "auto"
+    digits = {1: ["bambus", "asien", "land"],
+              2: ["braun", "teddy", "tier"],
+              3: ["stuhl", "kaffee", "möbel"],
+              4: ["schnell", "straße", "fahrzeug"]}
+
+    test = ["reis", "fell", "sessel"]
+
+    g = guess(digits, test)
+
+    for d in g:
+        print(d["prediction"])
+    quit()
 
 
 # initialize data_structures
 digits = {1: [], 2: [], 3: [], 4: []}
+while True:
+    for round in range(1, 9):
+        test = [None, None, None]
+        print(f"\nRound #{round}")
+        for i, ord in zip(range(3), ["st", "nd", "rd"]):
+            print(f"Please input {i+1}{ord} clue:")
+            test[i] = input()
+        g = guess(digits, test)
 
+        for d in g:
+            print(d["prediction"])
 
+        print("Was the guess correct? (y/n)")
+        if input() not in ["yes", "y", "Y"]:
+            if round == 8:
+                "The computer lost..."
+                break
+            else:
+                for word in test:
+                    print(f"What is the correct digit for \"{word}\"?")
+                    digits[int(input())].append(word)
+        else:
+            print("The computer won!")
+            break
+
+    print("Do you want to play again?")
+    if input() not in ["yes", "y", "Y"]:
+        print("Good bye!")
+        quit()
