@@ -100,6 +100,7 @@ parser = argparse.ArgumentParser(description="Computer player for the game 'Decr
 parser.add_argument("--german", "-g", action="store_true", help="Use German version (default: English)")
 parser.add_argument("--example", "-e", action="store_true", help="Use example Data (default: play")
 parser.add_argument("--beispiel", "-b", action="store_true", help="Use german example Data ( default:play)")
+parser.add_argument("--fast", "-f", action="store_true", help="Use smaller vocabulary for smaller memory or faster loading time.")
 args = parser.parse_args()
 
 
@@ -109,6 +110,8 @@ if args.german:
     path = ger_path
 else:
     path = eng_path
+
+l = 50000 if args.fast else 500000
 model = KeyedVectors.load_word2vec_format(path, binary=False, limit=50000)
 print("Done.")
 
