@@ -155,7 +155,7 @@ while True:
         print("\nWas the guess correct? (y/n)")
         if nice_input() not in ["yes", "y", "Y"]:
             if round == 8:
-                "The computer lost..."
+                print("The computer lost...")
                 break
             else:
                 # ask for correct answer
