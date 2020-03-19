@@ -7,20 +7,35 @@ def guess(digits, words):
     global model
     results = []
     for word in words:
-        result = {"word":word, "scores": []}
-        for d, l in digits.items():
+        # create dict for the results where:
+        # "word" -> the word as string
+        # "scores" -> scores as a dict with possible digits as key and their score as value
+        # "ranking" -> the ranked digits
+        result = {"word": word, "scores": {}, "ranking": []}
+        for dig, l in digits.items():
             if len(l) > 0:
+                # calculate cosine similarities to each existing word
                 similarities = [model.wv.similarity(word, w) for w in l]
-                result["scores"].append((d, sum(similarities)/len(similarities)))
-            else:
-                result["scores"].append((d, 0))
-        result["scores"].sort(key=lambda s: s[1], reverse=True)
-        result["prediction"] = result["scores"][0][0]
-        result["choice"] = 0
+                # calc avg and store digit and its score
+                result["scores"][dig] = sum(similarities) / len(similarities)
+                result["ranking"].append(dig)
+            else:  # handle empty classes
+                result["scores"][dig] = 0
+                result["ranking"].append(dig)
+
+        # sort the ranking list with the scores from the scores dict
+        result["ranking"].sort(key=lambda e: result["scores"][e], reverse=True)
+        result["prediction"] = result["ranking"][0]
+        result["choice"] = 0  # index to show which score is used as prediction, might change during optimization
         results.append(result)
+        # import pprint
+        # pp = pprint.PrettyPrinter()
+        # pp.pprint(results)
 
     # find optimal solution
+    # not using "clever" optimization algorithm because it doesnt work and its only 24 options
     # as long as answers are not destibuted, keep on optimizing
+    """ 
     c = 0
     while len(set(r["prediction"] for r in results)) != 3 and c < 3:
         c += 1
@@ -29,11 +44,12 @@ def guess(digits, words):
                 if r1["prediction"] == r2["prediction"]:
                     if r1["choice"] < 3:
                         # calculate "distance" between next best score and actual score
-                        delta1 = r1["scores"][r1["choice"] + 1][1] - r1["scores"][r1["choice"]]
+                        # print("r1:", )
+                        delta1 = r1["scores"][r1["choice"] + 1][1] - r1["scores"][r1["choice"]][1]
                     else:
                         delta1 = 100  # if there is no next best, use huge distance
                     if r2["choice"] < 3:
-                        delta2 = r2["scores"][r2["choice"] + 1][1] - r2["scores"][r2["choice"]]
+                        delta2 = r2["scores"][r2["choice"] + 1][1] - r2["scores"][r2["choice"]][1]
                     else:
                         delta2 = 100
 
@@ -46,7 +62,9 @@ def guess(digits, words):
                         i = random.choice([i1, i2])  # use random choice if both distances are equal
 
                     results[i]["choice"] += 1
-                    results[i]["prediction"] = results[i]["scores"][results[i]["choice"]][0]
+                    results[i]["prediction"] = results[i]["scores"][results[i]["choice"]][0]"""
+
+
 
     return results
 
@@ -65,7 +83,7 @@ digits = {1: ["bamboo", "asia", "country"],
           3: ["chair", "coffee", "furniture"],
           4: ["fast", "road", "vehicle"]}
 
-test = ["wheel", "communism", "communism"]
+test = ["wheel", "communism", "stool"]
 
 g = guess(digits, test)
 
