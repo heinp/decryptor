@@ -24,7 +24,7 @@ def nice_input():
 
 
 def guess(digits, words):
-    global model
+    global model, all_possibilities
     results = []
     for word in words:
         # create dict for the results where:
@@ -58,16 +58,15 @@ def guess(digits, words):
         # check the average score of all permutations and find best one
         print("Info: Not the best solution for every word possible.")
         best_avg_score = 0
-        best_perm = random.sample([1, 2, 3, 4], k=3)  # initialize best permutation randomly, if no best option is found
-        for comb in combinations([1, 2, 3, 4], 3):
-            for perm in permutations(comb):
-                sum_of_scores = 0
-                for result, dig in zip(results, perm):
-                    sum_of_scores += result["scores"][dig]
-                avg_score = sum_of_scores / 3
-                if avg_score > best_avg_score:
-                    best_perm = perm
-                    best_avg_score = avg_score
+        best_perm = random.choice(all_possibilities)  # initialize best permutation randomly, if no best option is found
+        for perm in all_possibilities:
+            sum_of_scores = 0
+            for result, dig in zip(results, perm):
+                sum_of_scores += result["scores"][dig]
+            avg_score = sum_of_scores / 3
+            if avg_score > best_avg_score:
+                best_perm = perm
+                best_avg_score = avg_score
         # update results
         for ri, best_dig in zip(range(3), best_perm):
             results[ri]["prediction"] = best_dig
@@ -104,9 +103,7 @@ if args.example:
     test = ["rice", "claw", "stool"]
 
     g = guess(digits, test)
-
-    for d in g:
-        pprint(g)
+    pprint(g)
     quit()
 
 elif args.beispiel:
@@ -120,71 +117,176 @@ elif args.beispiel:
     test = ["reis", "fell", "sessel"]
 
     g = guess(digits, test)
-
-    for d in g:
-        print(d["prediction"])
+    pprint(g)
     quit()
 
 
 # initialize data_structures
 default_digits = {1: [], 2: [], 3: [], 4: []}
 digits = dict(default_digits)
+all_possibilities = [list(perm) for comb in combinations([1, 2, 3, 4], 3) for perm in permutations(comb)]
+
 
 while True:
-    c = 0  # count of correct guesses
-    for round in range(1, 9):
-        test = [None, None, None]
-        print(f"\nRound #{round}")
-        # show the known clues
-        if round != 1:
-            for d, clues in digits.items():
-                print(f"{d}: {', '.join(clues) if clues else '––'}")
-            print("\n")
-
-        # ask for the three clues
-        for i, ord in zip(range(3), ["st", "nd", "rd"]):
-            print(f"Please input {i+1}{ord} clue:")
-            while True:
-                inp = nice_input()
-                if inp not in model.wv.vocab:
-                    print(f"'{inp}' is not in vocabulary – sorry!")
-                else:
-                    test[i] = inp
-                    break
-        g = guess(digits, test)
-
-        # print a prediction
-        for result in g:
-            print(result["prediction"])
-
-        print("\nWas the guess correct? (y/n)")
-        if nice_input() not in ["yes", "y", "Y"]:
-            if round == 8:
-                print("The computer lost...")
-                break
-            else:
-                # ask for correct answer
-                for word in test:
-                    print(f"What is the correct digit for '{word}'?")
-                    while True:
-                        inp = nice_input()
-                        if inp not in ["1", "2", "3", "4"]:
-                            print("That is no valid digit, pleas enter '1', '2', '3' or '4'!")
-                        else:
-                            break
-                    digits[int(inp)].append(word)
+    print("\nWill the computer be guessing (1) or giving clues (2)?")
+    while True:
+        selection = nice_input()
+        if selection not in ["1", "2"]:
+            print("Please write '1' for guessing or '2' for giving clues")
         else:
-            c += 1
-            if c == 2:  # winning condition
-                print("The computer won!")
-                print("Do you want to want to see the thinking of the computer? (y/n)")
-                if nice_input() in ["yes", "y", "Y"]:
-                    pp.pprint(g)
-                break
+            print("")
+            break
+
+    # guessing routine
+    if selection == "1":
+        c = 0  # count of correct guesses
+        for round in range(1, 9):
+            test = [None, None, None]
+            print(f"\nRound #{round}")
+            # show the known clues
+            if round != 1:
+                for d, clues in digits.items():
+                    print(f"{d}: {', '.join(clues) if clues else '––'}")
+                print("\n")
+
+            # ask for the three clues
+            for i, ord in zip(range(3), ["st", "nd", "rd"]):
+                print(f"Please input {i+1}{ord} clue:")
+                while True:
+                    inp = nice_input()
+                    if inp not in model.wv.vocab:
+                        print(f"'{inp}' is not in vocabulary – sorry!")
+                    else:
+                        test[i] = inp
+                        break
+            g = guess(digits, test)
+
+            # print a prediction
+            for result in g:
+                print(result["prediction"])
+
+            print("\nWas the guess correct? (y/n)")
+            if nice_input() not in ["yes", "y", "Y"]:
+                if round == 8:
+                    print("The computer lost...")
+                    break
+                else:
+                    # ask for correct answer
+                    for word in test:
+                        print(f"What is the correct digit for '{word}'?")
+                        while True:
+                            inp = nice_input()
+                            if inp not in ["1", "2", "3", "4"]:
+                                print("That is no valid digit, pleas enter '1', '2', '3' or '4'!")
+                            else:
+                                break
+                        digits[int(inp)].append(word)
             else:
-                print("The computer has the first right guess! Way to go!")
-                for result in g:
-                    digits[result["prediction"]].append(result["word"])
+                c += 1
+                if c == 2:  # winning condition
+                    print("The computer won!")
+                    print("Do you want to want to see the thinking of the computer? (y/n)")
+                    if nice_input() in ["yes", "y", "Y"]:
+                        pp.pprint(g)
+                    break
+                else:
+                    print("The computer has the first right guess! Way to go!")
+                    for result in g:
+                        digits[result["prediction"]].append(result["word"])
+
+    # giving clues routine
+    if selection == "2":
+        c = 0  # amount of correct guesses
+
+        print("Do you want to input words (1), or should the computer choose them (2)?")
+        while True:
+            inp = nice_input()
+            if inp not in ["1", "2"]:
+                print("That is no valid digit, pleas enter '1' or '2'!")
+            else:
+                break
+        selection2 = inp
+
+        # enter target words
+        targets = {}
+        if selection2 == "1":
+            for i in range(1, 5):
+                print(f"What is the word #{i}?")
+                while True:
+                    inp = nice_input()
+                    if inp not in model.wv.vocab:
+                        print(f"'{inp}' is not in vocabulary – sorry!")
+                    else:
+                        targets[i] = inp
+                        os.system('cls' if os.name == 'nt' else 'clear')
+                        break
+
+        # get target words from nouns list
+        if selection2 == "2":
+            if args.german:
+                path = "german-common-nouns.txt"
+            else:
+                path = "common-nouns.txt"
+            with open(path) as infile:
+                words = infile.read().split("\n")
+            for i in range(1,5):
+                targets[i] = random.choice(words)
+
+        # create mini thesaurus for clues
+        for i, t in targets.items():
+            sims = model.wv.most_similar([t], topn=100)
+            sims = [s[0] for s in sims if not inp in s[0].lower() and not s[0].lower() in inp]
+            targets[i] = (t, sims)
+
+        for round in range(1, 9):
+            test = [None, None, None]
+            print(f"\nRound #{round}")
+            # show the known clues
+            if round != 1:
+                for d, clues in digits.items():
+                    print(f"{d}: {', '.join(clues) if clues else '––'}")
+                print("")
+
+            this_perm = random.choice(all_possibilities)  # draw random permutation
+
+            # give clues for each digit
+            print("The clues:")
+            clues = []
+            for digit in this_perm:
+                clue = random.choice(targets[digit][1])
+                for d2 in targets:  # remove clue from all lists to prevent repetition
+                    if clue in targets[d2][1]:
+                        targets[d2][1].remove(clue)
+                clues.append(clue)
+                digits[digit].append(clue)
+            print(", ".join(clues))
+
+            # as for guess
+            guess = []
+            for clue in clues:
+                print(f"\nGuess digit for '{clue}'")
+                while True:
+                    inp = nice_input()
+                    if inp not in ["1", "2", "3", "4"]:
+                        print("That is no valid digit, pleas enter '1', '2', '3' or '4'!")
+                    else:
+                        guess.append(int(inp))
+                        break
+
+            if guess == this_perm:
+                c += 1
+                if c == 2:
+                    print("Congratulations, the player has won!")
+                    break
+                else:
+                    print("The player has their first correct guess! This is the way.")
+
+            else:
+                print("I'm sorry, that's wrong. The correct solution is")
+                print(", ".join(str(x) for x in this_perm))
+                if round == 8:
+                    print("The player lost...")
+                    break
 
     print("\nDo you want to play again? (y/n)")
     if nice_input() not in ["yes", "y", "Y"]:
