@@ -1,8 +1,8 @@
-from gensim.models import Word2Vec, KeyedVectors
+from gensim.models import KeyedVectors
 from itertools import combinations, permutations
 import pprint
 import random
-# import argparse
+import argparse
 
 pp = pprint.PrettyPrinter()
 
@@ -66,10 +66,12 @@ def guess(digits, words):
                     results[i]["choice"] += 1
                     results[i]["prediction"] = results[i]["scores"][results[i]["choice"]][0]"""
 
+    # wood hammer optimization algorithm
     if len(set(r["prediction"] for r in results)) != 3:
         # check the average score of all permutations and find best one
         print("Not the best solution for every word possible.")
         best_avg_score = 0
+        best_perm = random.sample([1,2,3,4], k=3)  # initialize best permutation randomly, if no best option is found
         for comb in combinations([1,2,3,4], 3):
             for perm in permutations(comb):
                 sum_of_scores = 0
@@ -91,19 +93,40 @@ def guess(digits, words):
 ger_path = "models/dewiki_20180420_300d.txt"
 eng_path = "models/enwiki_20180420_300d.txt"
 
+parser = argparse.ArgumentParser(description="Computer player for the game 'Decrypto'")
+parser.add_argument("--german", "-g", action="store_true", help="Use German version (default: English)")
+parser.add_argument("--example", "-e", action="store_true", help="Use example Data (default: play")
+args = parser.parse_args()
+
+
+
 print("Loading VSM...")
-model = KeyedVectors.load_word2vec_format(eng_path, binary=False, limit=50000)
+if args["german"]:
+    path = ger_path
+else:
+    path = eng_path
+model = KeyedVectors.load_word2vec_format(path, binary=False, limit=50000)
 print("Done.")
 
-# solution: 1: "china", 2: "bear", 3: "table", 4: "car"
-digits = {1: ["bamboo", "asia", "country"],
-          2: ["brown", "grizzly", "animal"],
-          3: ["chair", "coffee", "furniture"],
-          4: ["fast", "road", "vehicle"]}
+if args["example"]:
+    # Example data for debugging
+    # solution: 1: "china", 2: "bear", 3: "table", 4: "car"
+    digits = {1: ["bamboo", "asia", "country"],
+              2: ["brown", "grizzly", "animal"],
+              3: ["chair", "coffee", "furniture"],
+              4: ["fast", "road", "vehicle"]}
 
-test = ["wheel", "communism", "bike"]
+    test = ["rice", "claw", "stool"]
 
-g = guess(digits, test)
+    g = guess(digits, test)
 
-for d in g:
-    print(d["prediction"])
+    for d in g:
+        print(d["prediction"])
+    quit()
+
+
+
+# initialize data_structures
+digits = {1: [], 2: [], 3: [], 4: []}
+
+
