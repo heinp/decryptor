@@ -1,0 +1,29 @@
+The Clues must refer to the meaning of the Keywords.
+The Clues must never refer to the spelling (“C” to hint at “Cursed”), the number of letters (“8” or “8 letters” to hint at “Scorpion”), the position on the Screen (“musketeers” to hint at the word in the third position), or pronunciation (“face” to make your team guess “Place”).
+
+The Clues must be based on information that is publicly available.
+You can certainly refer to obscure Croatian poets of the 17th Century—it’s risky, but allowed! However, you may NEVER refer to “private” items, like what you ate for lunch or little sweet nothings between you and your spouse.
+
+
+
+Möglichkeiten:
+- Synonyme
+- Kontextwissen, kulturelle referenz
+- Komposita-Teile
+
+
+Synonyme:
+200 most-similar words pro Wort
+-> Average als Ausgabe für Query
+
+
+Kontextwissen:
+erste 10 Seiten der Google Ergebnisse parsen
+tf-idf Werte für alle Wörter
+-> tf-idf score für Query
+
+Komposita-Teile:
+alle Wörter des Vocabulars, in denen die Query enthalten ist
+maximaler Synonymscore für alle Komposita-Reste
+
+
