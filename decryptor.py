@@ -123,7 +123,7 @@ elif args.beispiel:
 
 # initialize data_structures
 default_digits = {1: [], 2: [], 3: [], 4: []}
-digits = list(default_digits)
+digits = dict(default_digits)
 
 while True:
     c = 0  # count of correct guesses
@@ -186,4 +186,4 @@ while True:
         print("Good bye!")
         quit()
     else:
-        digits = list(default_digits)
+        digits = dict(default_digits)
