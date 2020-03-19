@@ -5,6 +5,14 @@ import random
 import argparse
 import os
 
+parser = argparse.ArgumentParser(description="Computer player for the game 'Decrypto'")
+parser.add_argument("--german", "-g", action="store_true", help="use German version (default: English)")
+parser.add_argument("--example", "-e", action="store_true", help="use example Data (default: play")
+parser.add_argument("--beispiel", "-b", action="store_true", help="use german example Data ( default: play)")
+parser.add_argument("--fast", "-f", action="store_true",
+                    help="use smaller vocabulary for smaller memory or faster loading time")
+args = parser.parse_args()
+
 pp = pprint.PrettyPrinter()
 
 
@@ -37,7 +45,6 @@ def guess(digits, words):
         result["ranking"].sort(key=lambda e: result["scores"][e], reverse=True)
         result["prediction"] = result["ranking"][0]
         result["choice"] = 0  # index to show which score is used as prediction, might change during optimization
-        results.append(result)
     # pp.pprint(results)
 
     # find optimal solution
@@ -77,8 +84,8 @@ def guess(digits, words):
         # check the average score of all permutations and find best one
         print("Info: Not the best solution for every word possible.")
         best_avg_score = 0
-        best_perm = random.sample([1,2,3,4], k=3)  # initialize best permutation randomly, if no best option is found
-        for comb in combinations([1,2,3,4], 3):
+        best_perm = random.sample([1, 2, 3, 4], k=3)  # initialize best permutation randomly, if no best option is found
+        for comb in combinations([1, 2, 3, 4], 3):
             for perm in permutations(comb):
                 sum_of_scores = 0
                 for result, dig in zip(results, perm):
@@ -99,23 +106,14 @@ def guess(digits, words):
 ger_path = os.path.join("models", "dewiki_20180420_300d.txt")
 eng_path = os.path.join("models", "enwiki_20180420_300d.txt")
 
-parser = argparse.ArgumentParser(description="Computer player for the game 'Decrypto'")
-parser.add_argument("--german", "-g", action="store_true", help="use German version (default: English)")
-parser.add_argument("--example", "-e", action="store_true", help="use example Data (default: play")
-parser.add_argument("--beispiel", "-b", action="store_true", help="use german example Data ( default: play)")
-parser.add_argument("--fast", "-f", action="store_true", help="use smaller vocabulary for smaller memory or faster loading time")
-args = parser.parse_args()
-
-
-
 print("Loading VSM...")
 if args.german:
     path = ger_path
 else:
     path = eng_path
 
-l = 50000 if args.fast else 500000
-model = KeyedVectors.load_word2vec_format(path, binary=False, limit=50000)
+lim = 50000 if args.fast else 500000
+model = KeyedVectors.load_word2vec_format(path, binary=False, limit=lim)
 print("Done.")
 
 if args.example:
@@ -131,7 +129,7 @@ if args.example:
     g = guess(digits, test)
 
     for d in g:
-        print(d["prediction"])
+        pprint(g)
     quit()
 
 elif args.beispiel:
@@ -153,6 +151,7 @@ elif args.beispiel:
 
 # initialize data_structures
 digits = {1: [], 2: [], 3: [], 4: []}
+
 while True:
     c = 0  # count of correct guesses
     for round in range(1, 9):
