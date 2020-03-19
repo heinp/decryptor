@@ -23,7 +23,7 @@ This allows an approach based on distributional semantics, approximating word si
 Works with Python >3.6. You need gensim to be installed.
 
 Also you need to download the models "dewiki_20180420_300d.txt" and "enwiki_20180420_300d.txt" 
-from https://wikipedia2vec.github.io/wikipedia2vec/pretrained/ 
+from https://wikipedia2vec.github.io/wikipedia2vec/pretrained/. Store them in a folder called "models" in the decryptor folder.
 
 You can also use other pretrained models, they just need to be in the word2vec text format. Then you also 
 have to change the names of the models in the code.
