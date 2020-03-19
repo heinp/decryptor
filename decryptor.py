@@ -49,36 +49,6 @@ def guess(digits, words):
 
     # find optimal solution
     # not using "clever" optimization algorithm because it doesnt work and its only 24 options
-    # as long as answers are not destibuted, keep on optimizing
-    """ 
-    c = 0
-    while len(set(r["prediction"] for r in results)) != 3 and c < 3:
-        c += 1
-        for i1, r1 in enumerate(results):
-            for i2, r2 in enumerate(results[0:i1] + results[i1:]):
-                if r1["prediction"] == r2["prediction"]:
-                    if r1["choice"] < 3:
-                        # calculate "distance" between next best score and actual score
-                        # print("r1:", )
-                        delta1 = r1["scores"][r1["choice"] + 1][1] - r1["scores"][r1["choice"]][1]
-                    else:
-                        delta1 = 100  # if there is no next best, use huge distance
-                    if r2["choice"] < 3:
-                        delta2 = r2["scores"][r2["choice"] + 1][1] - r2["scores"][r2["choice"]][1]
-                    else:
-                        delta2 = 100
-
-                    # search smaller distance and use next best choice there
-                    if delta1 < delta2:
-                        i = i1
-                    elif delta2 < delta1:
-                        i = i2
-                    else:
-                        i = random.choice([i1, i2])  # use random choice if both distances are equal
-
-                    results[i]["choice"] += 1
-                    results[i]["prediction"] = results[i]["scores"][results[i]["choice"]][0]"""
-
     # wood hammer optimization algorithm
     if len(set(r["prediction"] for r in results)) != 3:
         # check the average score of all permutations and find best one
