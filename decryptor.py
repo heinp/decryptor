@@ -3,12 +3,15 @@ from itertools import combinations, permutations
 import pprint
 import random
 import argparse
+import os
 
 pp = pprint.PrettyPrinter()
+
 
 def nice_input():
     print(">>> ", end="")
     return input()
+
 
 def guess(digits, words):
     global model
@@ -93,14 +96,14 @@ def guess(digits, words):
 
 
 # downloaded from https://wikipedia2vec.github.io/wikipedia2vec/pretrained/
-ger_path = "models/dewiki_20180420_300d.txt"
-eng_path = "models/enwiki_20180420_300d.txt"
+ger_path = os.path.join("models", "dewiki_20180420_300d.txt")
+eng_path = os.path.join("models", "enwiki_20180420_300d.txt")
 
 parser = argparse.ArgumentParser(description="Computer player for the game 'Decrypto'")
-parser.add_argument("--german", "-g", action="store_true", help="Use German version (default: English)")
-parser.add_argument("--example", "-e", action="store_true", help="Use example Data (default: play")
-parser.add_argument("--beispiel", "-b", action="store_true", help="Use german example Data ( default: play)")
-parser.add_argument("--fast", "-f", action="store_true", help="Use smaller vocabulary for smaller memory or faster loading time.")
+parser.add_argument("--german", "-g", action="store_true", help="use German version (default: English)")
+parser.add_argument("--example", "-e", action="store_true", help="use example Data (default: play")
+parser.add_argument("--beispiel", "-b", action="store_true", help="use german example Data ( default: play)")
+parser.add_argument("--fast", "-f", action="store_true", help="use smaller vocabulary for smaller memory or faster loading time")
 args = parser.parse_args()
 
 
