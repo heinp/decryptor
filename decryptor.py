@@ -28,9 +28,9 @@ def guess(digits, words):
         result["prediction"] = result["ranking"][0]
         result["choice"] = 0  # index to show which score is used as prediction, might change during optimization
         results.append(result)
-        # import pprint
-        # pp = pprint.PrettyPrinter()
-        # pp.pprint(results)
+    # import pprint
+    # pp = pprint.PrettyPrinter()
+    # pp.pprint(results)
 
     # find optimal solution
     # not using "clever" optimization algorithm because it doesnt work and its only 24 options
