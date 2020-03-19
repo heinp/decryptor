@@ -159,7 +159,7 @@ while True:
         if round != 1:
             for d, clues in digits.items():
                 print(f"{d}: {', '.join(clues) if clues else '––'}")
-        print("\n")
+            print("\n")
 
         # ask for the three clues
         for i, ord in zip(range(3), ["st", "nd", "rd"]):
@@ -174,8 +174,8 @@ while True:
         g = guess(digits, test)
 
         # print a prediction
-        for d in g:
-            print(d["prediction"])
+        for result in g:
+            print(result["prediction"])
 
         print("\nWas the guess correct? (y/n)")
         if nice_input() not in ["yes", "y", "Y"]:
@@ -203,6 +203,8 @@ while True:
                 break
             else:
                 print("The computer has the first right guess! Way to go!")
+                for result in g:
+                    digits[result["prediction"]].append(result["word"])
 
     print("\nDo you want to play again? (y/n)")
     if nice_input() not in ["yes", "y", "Y"]:
