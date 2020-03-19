@@ -6,6 +6,9 @@ import argparse
 
 pp = pprint.PrettyPrinter()
 
+def nice_input():
+    print(">>> ", end="")
+    return input()
 
 def guess(digits, words):
     global model
@@ -69,7 +72,7 @@ def guess(digits, words):
     # wood hammer optimization algorithm
     if len(set(r["prediction"] for r in results)) != 3:
         # check the average score of all permutations and find best one
-        print("Not the best solution for every word possible.")
+        print("Info: Not the best solution for every word possible.")
         best_avg_score = 0
         best_perm = random.sample([1,2,3,4], k=3)  # initialize best permutation randomly, if no best option is found
         for comb in combinations([1,2,3,4], 3):
@@ -145,31 +148,60 @@ elif args.beispiel:
 # initialize data_structures
 digits = {1: [], 2: [], 3: [], 4: []}
 while True:
+    c = 0  # count of correct guesses
     for round in range(1, 9):
         test = [None, None, None]
         print(f"\nRound #{round}")
+        # show the known clues
+        if round != 1:
+            for d, clues in digits.items():
+                print(f"{d}: {', '.join(clues) if clues else '––'}")
+        print("\n")
+
+        # ask for the three clues
         for i, ord in zip(range(3), ["st", "nd", "rd"]):
             print(f"Please input {i+1}{ord} clue:")
-            test[i] = input()
+            while True:
+                inp = nice_input()
+                if inp not in model.wv.vocab:
+                    print(f"'{inp}' is not in vocabulary – sorry!")
+                else:
+                    test[i] = inp
+                    break
         g = guess(digits, test)
 
+        # print a prediction
         for d in g:
             print(d["prediction"])
 
-        print("Was the guess correct? (y/n)")
-        if input() not in ["yes", "y", "Y"]:
+        print("\nWas the guess correct? (y/n)")
+        if nice_input() not in ["yes", "y", "Y"]:
             if round == 8:
                 "The computer lost..."
                 break
             else:
+                # ask for correct answer
                 for word in test:
-                    print(f"What is the correct digit for \"{word}\"?")
-                    digits[int(input())].append(word)
+                    print(f"What is the correct digit for '{word}'?")
+                    while True:
+                        inp = nice_input()
+                        if inp not in ["1", "2", "3", "4"]:
+                            print("That is no valid digit, pleas enter '1', '2', '3' or '4'!")
+                        else:
+                            break
+                    digits[int(inp)].append(word)
         else:
-            print("The computer won!")
-            break
+            c += 1
+            if c == 2:  # winning condition
+                print("The computer won!")
+                print("Do you want to want to see the thinking of the computer? (y/n)")
+                if nice_input() in ["yes", "y", "Y"]:
+                    pp.pprint(g)
+                break
+            else:
+                print("The computer has the first right guess! Way to go!")
 
-    print("Do you want to play again?")
-    if input() not in ["yes", "y", "Y"]:
+    print("\nDo you want to play again? (y/n)")
+    if nice_input() not in ["yes", "y", "Y"]:
         print("Good bye!")
         quit()
