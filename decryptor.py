@@ -6,11 +6,13 @@ import argparse
 import os
 
 parser = argparse.ArgumentParser(description="Computer player for the game 'Decrypto'")
-parser.add_argument("--german", "-g", action="store_true", help="use German version (default: English)")
-parser.add_argument("--example", "-e", action="store_true", help="use example Data (default: play")
-parser.add_argument("--beispiel", "-b", action="store_true", help="use german example Data ( default: play)")
+group = parser.add_mutually_exclusive_group()
+group.add_argument("--german", "-g", action="store_true", help="use German version (default: English)")
+group.add_argument("--example", "-e", action="store_true", help="use example Data (default: play")
+group.add_argument("--beispiel", "-b", action="store_true", help="use german example Data (default: play)")
 parser.add_argument("--fast", "-f", action="store_true",
                     help="use smaller vocabulary for smaller memory or faster loading time")
+group.add_argument("--model", "-m", help="path to model, if not default")
 args = parser.parse_args()
 
 pp = pprint.PrettyPrinter()
@@ -83,6 +85,9 @@ if args.german:
     path = ger_path
 else:
     path = eng_path
+
+if args.model:
+    path = args.model
 
 lim = 50000 if args.fast else 500000
 model = KeyedVectors.load_word2vec_format(path, binary=False, limit=lim)
