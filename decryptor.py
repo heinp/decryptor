@@ -1,6 +1,10 @@
 from gensim.models import Word2Vec, KeyedVectors
+from itertools import combinations, permutations
+import pprint
 import random
 # import argparse
+
+pp = pprint.PrettyPrinter()
 
 
 def guess(digits, words):
@@ -28,8 +32,6 @@ def guess(digits, words):
         result["prediction"] = result["ranking"][0]
         result["choice"] = 0  # index to show which score is used as prediction, might change during optimization
         results.append(result)
-    # import pprint
-    # pp = pprint.PrettyPrinter()
     # pp.pprint(results)
 
     # find optimal solution
@@ -64,8 +66,24 @@ def guess(digits, words):
                     results[i]["choice"] += 1
                     results[i]["prediction"] = results[i]["scores"][results[i]["choice"]][0]"""
 
-
-
+    if len(set(r["prediction"] for r in results)) != 3:
+        # check the average score of all permutations and find best one
+        print("Not the best solution for every word possible.")
+        best_avg_score = 0
+        for comb in combinations([1,2,3,4], 3):
+            for perm in permutations(comb):
+                sum_of_scores = 0
+                for result, dig in zip(results, perm):
+                    sum_of_scores += result["scores"][dig]
+                avg_score = sum_of_scores / 3
+                if avg_score > best_avg_score:
+                    best_perm = perm
+                    best_avg_score = avg_score
+        # update results
+        for ri, best_dig in zip(range(3), best_perm):
+            results[ri]["prediction"] = best_dig
+            results[ri]["choice"] = results[ri]["ranking"].index(best_dig)
+    pp.pprint(results)
     return results
 
 
@@ -83,7 +101,7 @@ digits = {1: ["bamboo", "asia", "country"],
           3: ["chair", "coffee", "furniture"],
           4: ["fast", "road", "vehicle"]}
 
-test = ["wheel", "communism", "stool"]
+test = ["wheel", "communism", "bike"]
 
 g = guess(digits, test)
 
