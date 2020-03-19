@@ -40,3 +40,7 @@ You can use the following arguments:
                         path to model, if not default
 
 ```
+
+### Sources
+The list of common German nouns is from http://www.typo3-media.com/fileadmin/files/wordlists/german-common-nouns.txt.
+The common English nouns are from https://github.com/isaacg1/words/blob/master/common-nouns.txt.
