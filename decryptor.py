@@ -35,7 +35,8 @@ def guess(digits, words):
         for dig, l in digits.items():
             if len(l) > 0:
                 # calculate cosine similarities to each existing word
-                similarities = [model.wv.similarity(word, w) for w in l]
+                #similarities = [model.wv.similarity(word, w) for w in l]
+                similarities = [model.similarity(word, w) for w in l]
                 # calc avg and store digit and its score
                 result["scores"][dig] = sum(similarities) / len(similarities)
                 result["ranking"].append(dig)
@@ -154,7 +155,8 @@ while True:
                 print(f"Please input {i+1}{ord} clue:")
                 while True:
                     inp = nice_input()
-                    if inp not in model.wv.vocab:
+                    #if inp not in model.wv.vocab:
+                    if not model.has_index_for(inp):
                         print(f"'{inp}' is not in vocabulary – sorry!")
                     else:
                         test[i] = inp
@@ -214,7 +216,8 @@ while True:
                 print(f"What is the word #{i}?")
                 while True:
                     inp = nice_input()
-                    if inp not in model.wv.vocab:
+                   # if inp not in model.wv.vocab:
+                    if not model.has_index_for(inp):
                         print(f"'{inp}' is not in vocabulary – sorry!")
                     else:
                         targets[i] = inp
@@ -234,7 +237,8 @@ while True:
 
         # create mini thesaurus for clues
         for i, t in targets.items():
-            sims = model.wv.most_similar([t], topn=100)
+            #sims = model.wv.most_similar([t], topn=100)
+            sims = model.most_similar([t], topn=100)
             sims = [s[0] for s in sims if not inp in s[0].lower() and not s[0].lower() in inp]
             targets[i] = (t, sims)
 
